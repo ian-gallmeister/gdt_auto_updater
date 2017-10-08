@@ -1,11 +1,8 @@
-#!/usr/bin/env python3
-import praw
+#!/home/ian/Documents/GDT/bin/python
 import praw
 import json
-import getpass
 import requests
 import argparse
-from html.parser import HTMLParser
 from time import sleep
 from datetime import datetime
 
@@ -231,7 +228,12 @@ def edit_post( post, tables ):
 #Intermission - time remaining
 def intermission( data ):
   if data['liveData']['linescore']['intermissionInfo']['inIntermission']:
-    intermission_table = '|INTERMISSION|\n|:--:|\n|{}|'.format( data['liveData']['linescore']['intermissionInfo']['intermissionTimeRemaining'] )
+    time_remaining = data['liveData']['linescore']['intermissionInfo']['intermissionTimeRemaining']
+    seconds = 1.2 * time_remaining
+    minutes = int(round(seconds/60, 0))
+    residual = int(seconds) % 60
+    time_left = str(minutes)+':'+str(residual)
+    intermission_table = '|INTERMISSION|\n|:--:|\n|{}|'.format( time_left )
     return intermission_table
   else:
     return ''
