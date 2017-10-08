@@ -6,11 +6,6 @@ import argparse
 from time import sleep
 from datetime import datetime
 
-#TO DO:
-#argparse to allow automatic start
-#bypass mechanism for argparse presence
-#not as object
-
 #If data is live game data json
 #GAME ID: data['gameData']['game]['pk'] or data['gamePk']
 #Game state (Preview/In Progess/Final): data['gameData']['status']['abstractGameState']
