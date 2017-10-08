@@ -1,0 +1,39 @@
+Setting Up gdt_updater.py
+
+(1) Register an application
+https://www.reddit.com/prefs/apps
+
+At the bottom of the page click "create an app"
+
+Type: script
+Name: /r/hockey GDT Updater
+Description: You decide
+About URL: N/A
+Redirect URI: http://127.0.0.1/
+
+(2) Create a praw.ini file
+This is a text file that will be kept in the same directory as gdt_updater.py
+The file will contain all your credentials, two of which come from that app you just created
+The client_id is near the top of the new box and will be the line just under "personal use script"
+The client_secret is that string of characters called secret
+
+praw.ini will look like:
+[AUTHENTICATION]
+client_id=<The value under "personal use script">
+client_secret=<The value of the secret field>
+user_agent='GDT Updater for /r/hockey'
+username=<your username>
+password=<your password>
+
+(3) Register your app
+This is a google form to fill in that tells Reddit you're going to use their API
+Form here: 
+    https://docs.google.com/forms/d/e/1FAIpQLSezNdDNK1-P8mspSbmtC2r86Ee9ZRbC66u929cG2GX0T9UMyw/viewform 
+Company Name: n/a
+Company Point of Contact: "<your_name>, individual"
+POC Email: <your email>
+API Use Case: /r/hockey GDT Auto Updater
+Developer Platform: script
+OAUTH Client ID(s): <the client_id generated>
+
+The other fields should be left blank
