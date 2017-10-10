@@ -1,10 +1,18 @@
 #!/home/ian/Documents/GDT/bin/python
 import praw
+import praw
 import json
+import getpass
 import requests
 import argparse
+from html.parser import HTMLParser
 from time import sleep
 from datetime import datetime
+
+#TO DO:
+#argparse to allow automatic start
+#bypass mechanism for argparse presence
+#not as object
 
 #If data is live game data json
 #GAME ID: data['gameData']['game]['pk'] or data['gamePk']
@@ -97,14 +105,14 @@ def main():
   reddit = login()
   
   if not args.game_id:
-    game_id = select_game()
+    [ game_id, home, away ] = select_game()
   else:
     game_id = args.game_id
 
   url = 'https://statsapi.web.nhl.com/api/v1/game/'+str(game_id)+'/feed/live'
 
   if not args.post_id:
-    gdt = find_gdt()
+    gdt = find_gdt( game_id, home, away )
   else:
     gdt = reddit.submission( id = args.post_id )
 
@@ -147,6 +155,7 @@ def select_game( ): #Look at today's NHL schedule, scrape games, offer options t
   for x in sorted(games.keys()): #Print data: GAME_ID AWAY at HOME - GAME_STATE
     print( '{0} {1} at {2} - {3}'.format(x,games[x]['a'],games[x]['h'],games[x]['time']) )
 
+  print(games)
   response = input('Please enter the number of the game you need: ') #Select GAME_ID
   valid = False
   while not valid:
@@ -157,7 +166,7 @@ def select_game( ): #Look at today's NHL schedule, scrape games, offer options t
     else:
       valid = True
 
-  return response
+  return [ response, games[int(response)]['h'], games[int(response)]['a'] ]
 
 def find_gdt( reddit, away, home ): #Search for GDT or be given URL
   import pytz
@@ -237,7 +246,10 @@ def build_time_clock( data ):
   time_clock = '|Time Clock|\n|:--:|\n'
   period = data['liveData']['plays']['allPlays'][-1]['about']['ordinalNum']
   time = data['liveData']['plays']['allPlays'][-1]['about']['periodTime']
-  time_clock += '|{0} - {1}|'.format( period, time )
+  if time == '20:00':
+    time_clock += '|End {}|'.format( period )
+  else:
+    time_clock += '|{0} - {1}|'.format( period, time )
   return time_clock
 
 def build_score_table( data ):
