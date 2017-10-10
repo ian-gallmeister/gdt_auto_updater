@@ -108,6 +108,7 @@ def main():
     [ game_id, home, away ] = select_game()
   else:
     game_id = args.game_id
+    [ home, away ] = find_teams( game_id )
 
   url = 'https://statsapi.web.nhl.com/api/v1/game/'+str(game_id)+'/feed/live'
 
@@ -129,6 +130,26 @@ def login(  ): #Login to PRAW
   r = praw.Reddit( 'AUTHENTICATION' )
   #r = praw.Reddit( client_id='', client_secret='', user_agent='', username='', password='' )
   return r
+
+def find_teams( game_id ):
+  #If give game_id but not post ID, need home and away for post search
+  import pytz
+  from datetime import datetime
+
+  pacific = pytz.timezone( 'US/Pacific' ) #Open page, get data
+  today = datetime.now(pacific).strftime('%Y-%m-%d')
+  url = 'https://statsapi.web.nhl.com/api/v1/schedule?startDate='+today+'&endDate='+today+'&expand=schedule.teams,schedule.linescore'
+  page = requests.get( url )
+  data = json.loads( page.content.decode('utf-8') )['dates'][0]['games']
+  page.close()
+  
+  for game in games:
+    if game['gamePk'] == game_id:
+      home = game['teams']['home']['team']['abbreviation']
+      away = game['teams']['away']['team']['abbreviation']
+      return [ home, away ]
+  print( 'No matching game tonight.  Please double check your game ID\nExiting . . .' )
+  exit(1)
 
 def select_game( ): #Look at today's NHL schedule, scrape games, offer options to user.  Couched in 'if not parser.game_id: game_id = select_game()'
   import pytz
@@ -155,7 +176,7 @@ def select_game( ): #Look at today's NHL schedule, scrape games, offer options t
   for x in sorted(games.keys()): #Print data: GAME_ID AWAY at HOME - GAME_STATE
     print( '{0} {1} at {2} - {3}'.format(x,games[x]['a'],games[x]['h'],games[x]['time']) )
 
-  print(games)
+  #print(games)
   response = input('Please enter the number of the game you need: ') #Select GAME_ID
   valid = False
   while not valid:
