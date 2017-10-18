@@ -144,7 +144,7 @@ def find_teams( game_id ):
   page.close()
   
   for game in games:
-    if game['gamePk'] == game_id:
+    if int(game['gamePk']) == int(game_id):
       home = game['teams']['home']['team']['abbreviation']
       away = game['teams']['away']['team']['abbreviation']
       return [ home, away ]
