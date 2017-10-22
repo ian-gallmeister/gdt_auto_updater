@@ -5,7 +5,6 @@ import json
 import getpass
 import requests
 import argparse
-from html.parser import HTMLParser
 from time import sleep
 from datetime import datetime
 
@@ -113,7 +112,7 @@ def main():
   url = 'https://statsapi.web.nhl.com/api/v1/game/'+str(game_id)+'/feed/live'
 
   if not args.post_id:
-    gdt = find_gdt( game_id, home, away )
+    gdt = find_gdt( reddit, home, away )
   else:
     gdt = reddit.submission( id = args.post_id )
 
