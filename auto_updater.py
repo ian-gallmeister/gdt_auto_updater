@@ -354,16 +354,18 @@ def build_tables( url ):
   page = requests.get( url )
   data = json.loads(page.content.decode('utf-8'))
   page.close()
-
-  print( 'Generating tables ... ' )
-  score = build_score_table( data )
-  penalties = build_penalty_table( data )
-  time = build_time_table( data )
-  period_break = intermission( data ) 
-  goal_data = build_goals_table( data )
-  tables = '\n\n' + time + '\n\n' + score + '\n\n' + penalties + '\n\n' + goal_data
-  if period_break != '':
-    tables = period_break + '\n\n' + tables
+  plays = data['liveData']['plays']['allPlays']
+  tables = ''
+  if len(plays) >= 0:
+    print( 'Generating tables ... ' )
+    score = build_score_table( data )
+    penalties = build_penalty_table( data )
+    time = build_time_table( data )
+    period_break = intermission( data ) 
+    goal_data = build_goals_table( data )
+    tables = '\n\n' + time + '\n\n' + score + '\n\n' + penalties + '\n\n' + goal_data
+    if period_break != '':
+      tables = period_break + '\n\n' + tables
   return tables
 
 def edit_gdt( gdt, post ):
