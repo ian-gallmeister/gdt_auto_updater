@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import praw
-import praw
 import json
 import getpass
 import requests
