@@ -98,6 +98,7 @@ def main():
   parser = argparse.ArgumentParser( description='Inputs to bypass info-gathering scripts' )
   parser.add_argument( '--game_id', '-g', type=str, default=None, help='The game ID (the number input when selecting game)' )
   parser.add_argument( '--post_id', '-p', type=str, default=None, help='The GDT\'s post ID' )
+  parser.add_argument( '--remaining', '-r', dest='remaining', action='store_true', default=False, help='Swap the time clock to time remaining in period' )
   args = parser.parse_args()
   
   reddit = login()
@@ -117,7 +118,7 @@ def main():
 
   while True:
     post = pull_post( gdt )
-    tables = build_tables( url )
+    tables = build_tables( url, args.remaining )
     post = edit_post( post, tables )
     edit_gdt( gdt, post )
     monitor_game( url )
@@ -337,7 +338,7 @@ def build_penalty_table( data ):
     table += line.format( period, time, team, penalty_type, penalty_min, description ) 
   return table
 
-def build_time_table( data ):
+def build_time_table_elapsed( data ):
   last_play = data['liveData']['plays']['allPlays'][-1]
   period_ordinal = last_play['about']['ordinalNum']
   time_elapsed = last_play['about']['periodTime']
@@ -346,7 +347,16 @@ def build_time_table( data ):
     table = '|Time Clock|\n|:--:|\n|FINAL|\n'
   return table
 
-def build_tables( url ):
+def build_time_table_remaining( data ):
+  last_play = data['liveData']['plays']['allPlays'][-1]
+  period_ordinal = last_play['about']['ordinalNum']
+  time_remaining = last_play['about']['periodTimeRemaining']
+  table = '|Time Clock|\n|:--:|\n|{} - {}|\n'.format( period_ordinal, time_remaining )
+  if data['gameData']['status']['detailedState'] == 'Final':
+    table = '|Time Clock|\n|:--:|\n|FINAL|\n'
+  return table
+
+def build_tables( url, timeclock ):
   import requests
   import json
 
@@ -359,7 +369,10 @@ def build_tables( url ):
     print( 'Generating tables ... ' )
     score = build_score_table( data )
     penalties = build_penalty_table( data )
-    time = build_time_table( data )
+    if timeclock:
+      time = build_time_table_remaining( data )
+    else:
+      time = build_time_table_elapsed( data )
     period_break = intermission( data ) 
     goal_data = build_goals_table( data )
     tables = '\n\n' + time + '\n\n' + score + '\n\n' + penalties + '\n\n' + goal_data
