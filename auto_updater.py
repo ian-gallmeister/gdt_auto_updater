@@ -1,4 +1,4 @@
-#!/home/ian/Documents/GDT/bin/python
+#!/usr/bin/env python
 import praw
 import praw
 import json
