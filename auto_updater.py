@@ -139,7 +139,7 @@ def find_teams( game_id ):
   today = datetime.now(pacific).strftime('%Y-%m-%d')
   url = 'https://statsapi.web.nhl.com/api/v1/schedule?startDate='+today+'&endDate='+today+'&expand=schedule.teams,schedule.linescore'
   page = requests.get( url )
-  data = json.loads( page.content.decode('utf-8') )['dates'][0]['games']
+  games = json.loads( page.content.decode('utf-8') )['dates'][0]['games']
   page.close()
   
   for game in games:
